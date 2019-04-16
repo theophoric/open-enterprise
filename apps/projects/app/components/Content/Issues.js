@@ -428,7 +428,7 @@ class Issues extends React.PureComponent {
       nodes && [].concat(...nodes.map(node => node.issues.nodes))
 
     const currentSorter = this.generateSorter()
-
+console.log('ISSUES render')
     return (
       <Query
         fetchPolicy="cache-first"
@@ -438,6 +438,7 @@ class Issues extends React.PureComponent {
       >
         {({ data, loading, error, refetch }) => {
           if (data && data.nodes) {
+console.log('ISSUES render query')
             const issues = flattenIssues(data.nodes)
             const issuesFiltered = this.applyFilters(issues)
             return (
