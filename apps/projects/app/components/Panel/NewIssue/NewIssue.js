@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Mutation } from 'react-apollo'
 import { Field, TextInput, DropDown } from '@aragon/ui'
-import { NEW_ISSUE, GET_ISSUES } from '../../../utils/gql-queries.js'
+import { NEW_ISSUE } from '../../../utils/gql-queries.js'
 import { DescriptionInput, Form } from '../../Form'
 import { LoadingAnimation } from '../../Shared'
 
@@ -100,17 +100,11 @@ class NewIssue extends React.PureComponent {
 
     const id = selectedProject > 0 ? reposIds[selectedProject - 1] : ''
 
-    const reGet = [
-      {
-        query: GET_ISSUES,
-        variables: { reposIds },
-      },
-    ]
+    // TODO: refetch Issues list after mutation
 
     return (
       <Mutation
         mutation={NEW_ISSUE}
-        refetchQueries={reGet}
         variables={{ title, description, id }}
         onError={() => {
           console.error

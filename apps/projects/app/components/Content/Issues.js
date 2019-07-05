@@ -535,13 +535,10 @@ class Issues extends React.PureComponent {
       }
     }
 
-    // previous GET_ISSUES is deliberately left in place for reference
-    const GET_ISSUES2 = getIssuesGQL(reposQueryParams)
-
     return (
       <Query
         fetchPolicy="cache-first"
-        query={GET_ISSUES2}
+        query={getIssuesGQL(reposQueryParams)}
         onError={console.error}
       >
         {({ data, loading, error, refetch }) => {
