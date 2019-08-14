@@ -1,13 +1,14 @@
 import { castVote, executeVote, startVote } from './votes'
 import { onEntryAdded, onEntryRemoved } from './entry'
 import { hasLoadedVoteSettings, loadVoteSettings } from '../utils/vote-settings'
+import { handleAction } from './'
 
 export const handleEvent = async (state, event, settings) => {
   const {
     event: eventName,
     // TODO: implement eventAddress:
     // address: eventAddress,
-    returnValues: returnValues,
+    returnValues
   } = event
   const { addressBook } = settings
   const { entries } = state
@@ -24,9 +25,11 @@ export const handleEvent = async (state, event, settings) => {
     break
   case 'ExecuteVote':
     nextState = await executeVote(nextState, returnValues)
+    handleAction(nextState, event)
     break
   case 'StartVote':
     nextState = await startVote(nextState, returnValues)
+    handleAction(nextState, event)
     break
   case 'EntryAdded':
     nextEntries = await onEntryAdded({ entries, addressBook }, returnValues)
