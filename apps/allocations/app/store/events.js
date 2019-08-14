@@ -46,6 +46,7 @@ export const handleEvent = async (state, event, settings) => {
       )
       break
     default:
+      console.log('[allocations script] unhandled event:', event)
       break
     }
   }
