@@ -2,6 +2,7 @@ import { vaultLoadBalance } from './token'
 import { onFundedAccount, onNewAccount, onPayoutExecuted } from './account'
 import { onEntryAdded, onEntryRemoved } from './entry'
 import { addressesEqual } from '../utils/web3-utils'
+import { app } from './app'
 
 export const handleEvent = async (state, event, settings) => {
   const { address: eventAddress, event: eventName, returnValues } = event
@@ -45,6 +46,10 @@ export const handleEvent = async (state, event, settings) => {
         returnValues
       )
       break
+    case 'ForwardedActions':
+      console.log('forwardedAction Caught: ', returnValues)
+      onForwardedActions(returnValues)
+      break
     default:
       console.log('[allocations script] unhandled event:', event)
       break
@@ -53,4 +58,11 @@ export const handleEvent = async (state, event, settings) => {
   // If nextAccounts or nextEntries were not generated
   // then return each original array
   return nextState
+}
+
+const onForwardedActions = async ({ failedActionKeys, actions }) => {
+  const action = actions[failedActionKeys[0]]
+  console.log(action)
+  console.log('Get the metadata: ',(await app.queryAppMetadata(action.currentApp, action.actionId).toPromise()))
+  app.trigger('test trigger')
 }
