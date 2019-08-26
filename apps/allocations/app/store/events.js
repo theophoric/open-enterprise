@@ -2,6 +2,7 @@ import { vaultLoadBalance } from './token'
 import { onFundedAccount, onNewAccount, onPayoutExecuted } from './account'
 import { onEntryAdded, onEntryRemoved } from './entry'
 import { addressesEqual } from '../utils/web3-utils'
+import { ipfsGet } from '../../../../shared/ui/utils/ipfs-helpers'
 import { app } from './app'
 
 export const handleEvent = async (state, event, settings) => {
@@ -48,7 +49,7 @@ export const handleEvent = async (state, event, settings) => {
       break
     case 'ForwardedActions':
       console.log('forwardedAction Caught: ', returnValues)
-      onForwardedActions(returnValues)
+      nextState.offchainActions = await onForwardedActions(returnValues)
       break
     default:
       console.log('[allocations script] unhandled event:', event)
@@ -57,12 +58,29 @@ export const handleEvent = async (state, event, settings) => {
   }
   // If nextAccounts or nextEntries were not generated
   // then return each original array
+  if (nextState.offchainActions) console.log('nextState with pending actions: ', nextState)
   return nextState
 }
 
-const onForwardedActions = async ({ failedActionKeys, actions }) => {
-  const action = actions[failedActionKeys[0]]
-  console.log(action)
-  console.log('Get the metadata: ',(await app.queryAppMetadata(action.currentApp, action.actionId).toPromise()))
-  app.trigger('test trigger')
+const onForwardedActions = async ({ failedActionKeys = [], pendingActionKeys = [], actions }) => {
+  const offchainActions = { pendingActions: [], failedActions: [] }
+
+  const getDataFromKey = async key => {
+    const action = actions[key]
+    console.log(action)
+    const data = await app.queryAppMetadata(action.currentApp, action.actionId).toPromise()
+    console.log('Get the metadata: ', data)
+    if (!data) return
+    const metadata = await ipfsGet(data.cid)
+    offchainActions.failedActions.push({ ...action, ...metadata })
+  }
+
+  let getFailedActionData = failedActionKeys.map(getDataFromKey)
+
+  let getPendingActionData = pendingActionKeys.map(getDataFromKey)
+
+  await Promise.all([ ...getFailedActionData, ...getPendingActionData ])
+  console.log('offchain state: ', offchainActions)
+  //app.trigger('test trigger')
+  return offchainActions
 }
