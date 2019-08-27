@@ -1,3 +1,4 @@
+import { ipfsGet } from '../../../../shared/utils/ipfs'
 import { app } from './app'
 /// /////////////////////////////////////
 /*     AddressBook event handlers      */
@@ -29,20 +30,42 @@ export const onEntryRemoved = async ({ entries }, { addr }) => {
   return entries
 }
 
+export const onEntryUpdated = async ({ entries = [] }, { addr }) => {
+  const index = entries.indexOf(entry => entry.addr === addr)
+
+  if (index) {
+    const data = await loadEntryData(addr) // async load data from contract
+    if (data) { // just perform transform if data was found (entry was not subsequently removed)
+      const entry = { addr, data }
+      entries[index] = entry
+    }
+  } else {
+    onEntryAdded({ entries }, { addr })
+  }
+
+  // return the (un)modified entries array
+  return entries
+}
+
 /// /////////////////////////////////////
 /*    AddressBook helper functions    */
 /// /////////////////////////////////////
 
 const loadEntryData = (addr) => {
-  return new Promise(resolve => {
-    app.call('getEntry', addr).subscribe(entry => {
-      // don't resolve when entry not found
-      entry &&
-        resolve({
-          entryAddress: entry[0],
-          name: entry[1],
-          entryType: entry[2],
+  return new Promise((resolve, reject) => {
+    app.call('getEntry', addr).subscribe(async cid => {
+      if (!cid) resolve() // entry probably removed in a future block
+      try {
+        const entry = await ipfsGet(cid)
+        resolve(entry)
+      } catch (error) {
+        console.error(error) // TODO: incorporate this info into the errorCode & errorMessage below!!
+        reject({
+          caughtError: error,
+          errorCode: 'ipfs_resolution_error',
+          errorMessage: 'could not resolve ipfs blah blah blah; fix this error message in apps/address-book/app/store/entry.js',
         })
+      }
     })
   })
 }
