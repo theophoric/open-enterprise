@@ -15,7 +15,7 @@ const nameSorter = (a, b) => a.data.name.toUpperCase() > b.data.name.toUpperCase
 const App = () => {
   const [ panel, setPanel ] = useState(null)
   const { api, appState, displayMenuButton = false } = useAragonApi()
-  const { accounts = [], balances = [], entries = [], payouts = [] } = appState
+  const { accounts = [], balances = [], entries = [], payouts = [], offchainActions = {} } = appState
 
   const onCreateAccount = ({ description }) => {
     api.newAccount(description).toPromise()
@@ -122,6 +122,7 @@ const App = () => {
             payouts={payouts}
             executePayout={onExecutePayout}
             tokens={balances}
+            offchainData={offchainActions}
           />
         </AppView>
 
