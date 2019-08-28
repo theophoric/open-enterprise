@@ -48,6 +48,7 @@ export const handleEvent = async (state, event, settings) => {
       )
       break
     case 'ForwardedActions':
+      console.log('action caught: ', returnValues)
       nextState.offchainActions = await onForwardedActions(returnValues)
       break
     default:
@@ -94,6 +95,6 @@ const onForwardedActions = async ({ failedActionKeys = [], pendingActionKeys = [
       distSet: false,
       pending: true
     }))
-  
+
   return offchainActions
 }
