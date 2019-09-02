@@ -56,8 +56,9 @@ const loadEntryData = (addr) => {
     app.call('getEntry', addr).subscribe(async cid => {
       if (!cid) resolve() // entry probably removed in a future block
       try {
-        const entry = await ipfsGet(cid)
-        resolve(entry)
+        const entryData = await ipfsGet(cid)
+        // It is also needed track the cid because the remove function needs it
+        resolve({ ...entryData, cid })
       } catch (error) {
         console.error(error) // TODO: incorporate this info into the errorCode & errorMessage below!!
         reject({
