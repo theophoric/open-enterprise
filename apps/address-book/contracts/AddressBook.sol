@@ -11,7 +11,7 @@ import "@aragon/os/contracts/apps/AragonApp.sol";
  * @title AddressBook App
  * @author Autark
  * @dev Defines an address book (registry) that allows the
- * association of an ethereum address with an IPFS cID pointing to JSON content
+ * association of an ethereum address with an IPFS CID pointing to JSON content
  */
 contract AddressBook is AragonApp {
 
@@ -57,7 +57,7 @@ contract AddressBook is AragonApp {
     }
 
     /**
-     * @dev Guard to ensure the CID is 46 chars long according to bse58 encoding
+     * @dev Guard to ensure the CID is 46 chars long according to base58 encoding
      * @param _cid The IPFS hash of the entry to add to the registry
      */
     modifier cidIsValid(string _cid) {
@@ -68,7 +68,7 @@ contract AddressBook is AragonApp {
     }
 
     /**
-     * @notice Initialize AddressBook app`
+     * @notice Initialize AddressBook app
      * @dev Initializes the app, this is the Aragon custom constructor
      */
     function initialize() external onlyInit {
@@ -77,7 +77,7 @@ contract AddressBook is AragonApp {
 
     /**
      * @notice Add the entity `_cid` with address `_addr` to the registry.
-     * @dev CID's must be base58-encoded in order to work with this function
+     * @dev CIDs must be base58-encoded in order to work with this function
      * @param _addr The address of the entry to add to the registry
      * @param _cid The IPFS hash of the entry to add to the registry
      */
@@ -93,12 +93,12 @@ contract AddressBook is AragonApp {
 
     /**
      * @notice Remove entity `_cid` with address `_addr` from the registry.
-     * @dev this function only supports CID's that are base58-encoded
+     * @dev this function only supports CIDs that are base58-encoded
      * @param _addr The ID of the entry to remove
-     * @param _oldCid The IPFS hash of the entry to remove from the registry; used only for radpec here
+     * @param _cid The IPFS hash of the entry to remove from the registry; used only for radspec here
      */
-    function removeEntry(address _addr, string _oldCid) external entryExists(_addr) auth(REMOVE_ENTRY_ROLE) {
-        require(keccak256(bytes(_oldCid)) == keccak256(bytes(entries[_addr].data)), ERROR_NO_CID);
+    function removeEntry(address _addr, string _cid) external entryExists(_addr) auth(REMOVE_ENTRY_ROLE) {
+        require(keccak256(bytes(_cid)) == keccak256(bytes(entries[_addr].data)), ERROR_NO_CID);
         uint256 rowToDelete = entries[_addr].index;
         if (entryArrLength != 1) {
             address entryToMove = entryArr[entryArrLength - 1];
@@ -113,7 +113,7 @@ contract AddressBook is AragonApp {
 
     /**
      * @notice Update address `_addr` from `_oldCid` to `_newCid` in the registry.
-     * @dev this function only supports CID's that are base58-encoded
+     * @dev this function only supports CIDs that are base58-encoded
      * @param _addr The ID of the entry to update
      * @param _oldCid The CID of the existing information
      * @param _newCid The new CID of updated entity info
@@ -150,7 +150,7 @@ contract AddressBook is AragonApp {
     }
 
     /**
-     * @notice Checks if a entry exists in the registry
+     * @notice Checks if an entry exists in the registry
      * @param _entry the address to check
      * @return _repoId Id for entry in entryArr
      */
