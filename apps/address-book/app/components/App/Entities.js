@@ -32,31 +32,30 @@ const Entities = ({ entities, onNewEntity, onRemoveEntity }) => {
   } else {
     return (
       <DataView
-        mode="table"
-        fields={[ 'Entity', '' ]}
+        mode="adaptive"
+        fields={[ 'Name', 'Address', 'Type' ]}
         entries={
-          entities.sort(entitiesSort).map(({ data: { name, entryAddress, entryType } }) =>
-            [ name, entryAddress, entryType ]
+          entities.sort(entitiesSort).map(({ addr: address, data: { name, type } }) =>
+            [ address, name, type ]
           )
         }
 
-        renderEntry={([ name, entryAddress, entryType ]) => {
-          const typeRow = ENTITY_TYPES.filter(row => row.name === entryType)[0]
+        renderEntry={([ address, name, type ]) => {
+          const typeRow = ENTITY_TYPES.filter(row => row.name === type)[0]
           const values = [
             // eslint-disable-next-line react/jsx-key
-            <EntityWrapper>
-              <Text
-                size="xlarge"
-                css="padding-bottom: 5px"
-              >
-                {name}
-              </Text>
-              <LocalIdentityBadge
-                networkType={network && network.type}
-                entity={entryAddress}
-                shorten={true}
-              />
-            </EntityWrapper>,
+            <Text
+              size="xlarge"
+              css="padding-bottom: 5px"
+            >
+              {name}
+            </Text>,
+            <LocalIdentityBadge
+              key={address}
+              networkType={network && network.type}
+              entity={address}
+              shorten={true}
+            />,
 
             // eslint-disable-next-line react/jsx-key
             <Badge
@@ -70,9 +69,9 @@ const Entities = ({ entities, onNewEntity, onRemoveEntity }) => {
           return values
         }}
 
-        renderEntryActions={([ , entryAddress ]) => (
+        renderEntryActions={([address]) => (
           <ContextMenu>
-            <ContextMenuItem onClick={removeEntity(entryAddress)}>
+            <ContextMenuItem onClick={removeEntity(address)}>
                 Remove
             </ContextMenuItem>
           </ContextMenu>
