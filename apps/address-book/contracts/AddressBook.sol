@@ -52,7 +52,7 @@ contract AddressBook is AragonApp {
      * @param _addr The address to enforce its existence in the registry
      */
     modifier entryExists(address _addr) {
-        require(bytes(entries[_addr].data).length != 0, ERROR_NOT_FOUND);
+        require(isEntryAdded(_addr), ERROR_NOT_FOUND);
         _;
     }
 
@@ -154,8 +154,12 @@ contract AddressBook is AragonApp {
      * @param _entry the address to check
      * @return _repoId Id for entry in entryArr
      */
-    function isEntryAdded(address _entry) public view returns(bool isAdded) {
+    function isEntryAdded(address _entry) public view returns (bool isAdded) {
         if (entryArrLength == 0) {
+            return false;
+        }
+
+        if (entries[_entry].index >= entryArrLength) {
             return false;
         }
 
