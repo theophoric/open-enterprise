@@ -5,7 +5,6 @@ import ipfsClient from 'ipfs-http-client'
 const host = 'ipfs.autark.xyz'
 const protocol = 'https'
 const port = '5001'
-const endpoint = `${protocol}://${gateway}:${port}/api/v0`
 const client = ipfsClient({ host, port, protocol })
 
 const bufferFile = content => client.types.Buffer.from(JSON.stringify(content))
@@ -20,8 +19,9 @@ export const ipfsAdd = async content => {
   }
 }
 
-export const ipfsGet = async (hash) => {
-  const endpoint = `${ipfsEndpoint}/cat?arg=${hash}`
+export const ipfsGet = async hash => {
+  const gatewayAPI = `${protocol}://${host}:${port}/api/v0`
+  const endpoint = `${gatewayAPI}/cat?arg=${hash}`
   try {
     const { data } = await axios.get(endpoint)
     return data
