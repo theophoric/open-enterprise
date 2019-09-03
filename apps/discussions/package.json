@@ -33,7 +33,8 @@
     "eslint-plugin-standard": "^4.0.0",
     "prettier": "^1.17.1",
     "react-hot-loader": "^4.8.8",
-    "solidity-coverage": "0.5.11"
+    "solidity-coverage": "0.5.11",
+    "solium": "1.1.8"
   },
   "scripts": {
     "dev": "npm run sync-assets && parcel app/index.html --port 9999",
