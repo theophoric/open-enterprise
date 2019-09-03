@@ -33,6 +33,8 @@ contract AddressBook is AragonApp {
     struct Entry {
         string data;
         uint256 index;
+        bool derp;
+        string derpStr;
     }
 
     /// The entries in the registry
@@ -41,6 +43,9 @@ contract AddressBook is AragonApp {
     /// Array-like struct to access all addresses
     mapping(uint256 => address) public entryArr;
     uint256 public entryArrLength;
+    uint256 private testInt;
+    uint256[] public testIntArr;
+    string public noopStr;
 
     /// Events
     event EntryAdded(address addr); /// Fired when an entry is added to the registry
@@ -87,7 +92,7 @@ contract AddressBook is AragonApp {
         // due to the quantity of entries
         uint256 entryIndex = entryArrLength++;
         entryArr[entryIndex] = _addr;
-        entries[_addr] = Entry(_cid, entryIndex);
+        entries[_addr] = Entry(_cid, entryIndex, true, "Say Derp!");
         emit EntryAdded(_addr);
     }
 
@@ -164,5 +169,9 @@ contract AddressBook is AragonApp {
         }
 
         return (entryArr[entries[_entry].index] == _entry);
+    }
+    
+    function addArr(uint256 _val) public isInitialized {
+        testIntArr.push(_val);
     }
 }
