@@ -12,6 +12,7 @@ import {
 } from '@aragon/ui'
 
 import { LocalIdentityBadge } from '../../../../../shared/identity'
+import { IconDelete } from '../../../../../shared/ui'
 import { Empty } from '../Card'
 
 // TODO: colors taken directly from Invision
@@ -72,7 +73,8 @@ const Entities = ({ entities, onNewEntity, onRemoveEntity }) => {
         renderEntryActions={([address]) => (
           <ContextMenu>
             <ContextMenuItem onClick={removeEntity(address)}>
-                Remove
+              <IconDelete />
+              <span css="padding: 4px 8px 0px">Remove</span>
             </ContextMenuItem>
           </ContextMenu>
         )}
